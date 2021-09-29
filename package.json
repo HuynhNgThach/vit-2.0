@@ -1,0 +1,38 @@
+{
+  "name": "vit",
+  "version": "1.0.0",
+  "description": "Bot discord for fun",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HuynhNgThach/vit-2.0.git"
+  },
+  "author": "lovebeat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HuynhNgThach/vit-2.0/issues"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "homepage": "https://github.com/HuynhNgThach/vit-2.0#readme",
+  "dependencies": {
+    "@discordjs/builders": "^0.6.0",
+    "@discordjs/opus": "^0.6.0",
+    "@discordjs/rest": "0.1.0-canary.0",
+    "@discordjs/voice": "^0.6.0",
+    "discord-api-types": "^0.23.1",
+    "discord.js": "^13.1.0",
+    "dotenv": "^10.0.0",
+    "eslint": "^7.32.0",
+    "ffmpeg-static": "^4.4.0",
+    "libsodium-wrappers": "^0.7.9",
+    "nodemon": "^2.0.13",
+    "youtube-sr": "^4.1.7",
+    "ytdl-core": "^4.9.1"
+  }
+}
