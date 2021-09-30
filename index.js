@@ -55,6 +55,7 @@ for (const file of eventFiles) {
 }
 
 client.once('ready', () => {
+
 	client.playerManager = new Map();
 	client.guildData = new Collection();
 	client.user.setActivity('/', { type: 'WATCHING' });
