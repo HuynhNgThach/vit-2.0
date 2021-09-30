@@ -28,7 +28,7 @@ if (typeof DELETE_OLD_PLAY_MESSAGE !== 'boolean') DELETE_OLD_PLAY_MESSAGE = fals
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('play')
-		.setDescription('Vịt hát một bài (Youtube or Spotify)')
+		.setDescription('Vịt hát một bài (Youtube )')
 		.addStringOption(option =>
 			option
 				.setName('query')
@@ -48,6 +48,14 @@ module.exports = {
 		}
 
 		const query = interaction.options.get('query').value;
+		const splitQuery = query.split(' ');
+		const search = splitQuery[splitQuery.length - 1] === '-s';
+		let song = query;
+		if (search) {
+			splitQuery.pop();
+			song = splitQuery.join(' ');
+		}
+
 		let player = interaction.client.playerManager.get(interaction.guildId);
 		if (!player) {
 			player = new Player();
@@ -60,174 +68,218 @@ module.exports = {
 		player.commandLock = true;
 
 		// seatch youtube song
-		await searchYoutube(query,
+		await searchYoutube(song,
 			interaction,
 			player,
-			interaction.member.voice.channel), false, false;
+			interaction.member.voice.channel, search);
 	},
 };
 const searchYoutube = async (
-	query,
+	song,
 	interaction,
 	player,
 	voiceChannel,
-	nextFlag,
-	jumpFlag,
+	searchFlag,
 ) => {
-	const videos = await Youtube.search(query, { limit: 5 }).catch(
+	const limit = searchFlag ? 5 : 1;
+	const videos = await Youtube.search(song, { limit }).catch(
 		async function() {
 			return interaction.followUp(
 				':x: There was a problem searching the video you requested!',
 			);
 		},
 	);
+	console.log(videos);
 	if (!videos) {
 		player.commandLock = false;
 		return interaction.followUp(
 			':x: I had some trouble finding what you were looking for, please try again or be more specific.',
 		);
 	}
-	if (videos.length < 5) {
+	if (searchFlag && videos.length < 5) {
 		player.commandLock = false;
 		return interaction.followUp(
 			':x: I had some trouble finding what you were looking for, please try again or be more specific.',
 		);
 	}
-	const vidNameArr = [];
-	for (let i = 0; i < videos.length; i++) {
-		vidNameArr.push(videos[i].title.slice(0, 99));
-	}
-	vidNameArr.push('cancel');
-	const row = createSelectMenu(vidNameArr);
-	const playOptions = await interaction.channel.send({
-		content: 'Tao tìm được nhiêu đây, chọn 1 bài đi nào',
-		components: [row],
-	});
-	const playOptionsCollector = playOptions.createMessageComponentCollector({
-		componentType: 'SELECT_MENU',
-		time: MAX_RESPONSE_TIME * 1000,
-	});
-	playOptionsCollector.on('end', async () => {
-		if (playOptions) {
-			await playOptions.delete().catch(console.error);
+	if (searchFlag) {
+		const vidNameArr = [];
+		for (let i = 0; i < videos.length; i++) {
+			vidNameArr.push(videos[i].title.slice(0, 99));
 		}
-	});
-
-	playOptionsCollector.on('collect', async i => {
-		if (i.user.id !== interaction.user.id) {
-			i.reply({
-				content: 'This element is not for you!',
-				ephemeral: true,
-			});
-		}
-		else {
-			playOptionsCollector.stop();
-			const value = i.values[0];
-			if (value === 'cancel_option') {
-				if (playOptions) {
-					interaction.followUp('Search canceled');
-					player.commandLock = false;
-					return;
-				}
+		vidNameArr.push('cancel');
+		const row = createSelectMenu(vidNameArr);
+		const playOptions = await interaction.channel.send({
+			content: 'Tao tìm được nhiêu đây, chọn 1 bài đi nào',
+			components: [row],
+		});
+		const playOptionsCollector = playOptions.createMessageComponentCollector({
+			componentType: 'SELECT_MENU',
+			time: MAX_RESPONSE_TIME * 1000,
+		});
+		playOptionsCollector.on('end', async () => {
+			if (playOptions) {
+				await playOptions.delete().catch(console.error);
 			}
-			const videoIndex = parseInt(value);
+		});
 
-			Youtube.getVideo(
-				`https://www.youtube.com/watch?v=${videos[videoIndex - 1].id}`,
-			)
-				.then(function(video) {
-					if (video.live && !PLAY_LIVE_STREAM) {
-						if (playOptions) {
-							playOptions.delete().catch(console.error);
-							return;
-						}
+		playOptionsCollector.on('collect', async i => {
+			if (i.user.id !== interaction.user.id) {
+				i.reply({
+					content: 'This element is not for you!',
+					ephemeral: true,
+				});
+			}
+			else {
+				playOptionsCollector.stop();
+				const value = i.values[0];
+				if (value === 'cancel_option') {
+					if (playOptions) {
+						interaction.followUp('Search canceled');
 						player.commandLock = false;
-						return interaction.followUp(
-							'Live streams are disabled in this server! Contact the owner',
-						);
+						return;
 					}
+				}
+				const videoIndex = parseInt(value);
 
-					if (video.duration.hours !== 0 && !PLAY_VIDEO_LONGER_THAN_1_HOUR) {
-						if (playOptions) {
-							playOptions.delete().catch(console.error);
-							return;
-						}
-						player.commandLock = false;
-						return interaction.followUp(
-							'Videos longer than 1 hour are disabled in this server! Contact the owner',
-						);
-					}
-
-					if (
-						interaction.client.playerManager.get(interaction.guildId).queue
-							.length > MAX_QUEUE_LENGTH
-					) {
-						if (playOptions) {
-							playOptions.delete().catch(console.error);
-							return;
-						}
-						player.commandLock = false;
-						return interaction.followUp(
-							`The queue hit its limit of ${MAX_QUEUE_LENGTH}, please wait a bit before attempting to add more songs`,
-						);
-					}
-
-					if (nextFlag || jumpFlag) {
-						interaction.client.playerManager
-							.get(interaction.guildId)
-							.queue.unshift(
-								constructSongObj(video, voiceChannel, interaction.member.user),
+				Youtube.getVideo(
+					`https://www.youtube.com/watch?v=${videos[videoIndex - 1].id}`,
+				)
+					.then(function(video) {
+						if (video.live && !PLAY_LIVE_STREAM) {
+							if (playOptions) {
+								playOptions.delete().catch(console.error);
+								return;
+							}
+							player.commandLock = false;
+							return interaction.followUp(
+								'Live streams are disabled in this server! Contact the owner',
 							);
-						if (
-							jumpFlag &&
-              interaction.client.playerManager.get(interaction.guildId).audioPlayer.state.status === AudioPlayerStatus.Playing
-						) {
-							interaction.client.playerManager.get(
-								interaction.guildId,
-							).loopSong = false;
-							interaction.client.playerManager
-								.get(interaction.guildId)
-								.audioPlayer.stop();
-							return interaction.followUp('Skipped song!');
 						}
-					}
-					else {
+
+						if (video.duration.hours !== 0 && !PLAY_VIDEO_LONGER_THAN_1_HOUR) {
+							if (playOptions) {
+								playOptions.delete().catch(console.error);
+								return;
+							}
+							player.commandLock = false;
+							return interaction.followUp(
+								'Videos longer than 1 hour are disabled in this server! Contact the owner',
+							);
+						}
+
+						if (
+							interaction.client.playerManager.get(interaction.guildId).queue
+								.length > MAX_QUEUE_LENGTH
+						) {
+							if (playOptions) {
+								playOptions.delete().catch(console.error);
+								return;
+							}
+							player.commandLock = false;
+							return interaction.followUp(
+								`The queue hit its limit of ${MAX_QUEUE_LENGTH}, please wait a bit before attempting to add more songs`,
+							);
+						}
+
+
 						interaction.client.playerManager
 							.get(interaction.guildId)
 							.queue.push(
 								constructSongObj(video, voiceChannel, interaction.member.user),
 							);
-					}
-					if (
-						interaction.client.playerManager.get(interaction.guildId)
-							.audioPlayer.state.status !== AudioPlayerStatus.Playing
-					) {
-						const player = interaction.client.playerManager.get(
-							interaction.guildId,
-						);
-						console.log(player);
-						handleSubscription(player.queue, interaction, player);
-					}
-					else if (
-						interaction.client.playerManager.get(interaction.guildId)
-							.audioPlayer.state.status === AudioPlayerStatus.Playing
-					) {
+
+						if (
+							interaction.client.playerManager.get(interaction.guildId)
+								.audioPlayer.state.status !== AudioPlayerStatus.Playing
+						) {
+							handleSubscription(player.queue, interaction, player);
+						}
+						else if (
+							interaction.client.playerManager.get(interaction.guildId)
+								.audioPlayer.state.status === AudioPlayerStatus.Playing
+						) {
+							player.commandLock = false;
+							return interaction.followUp(`Added **${video.title}** to farm`);
+						}
+						return;
+					})
+					.catch(error => {
 						player.commandLock = false;
-						return interaction.followUp(`Added **${video.title}** to farm`);
-					}
-					return;
-				})
-				.catch(error => {
+						deletePlayerIfNeeded(interaction);
+						if (playOptions) playOptions.delete().catch(console.error);
+						console.error(error);
+						return interaction.followUp(
+							'An error has occurred while trying to get the video ID from youtube.',
+						);
+					});
+			}
+		});
+	}
+	else {
+		Youtube.getVideo(
+			`https://www.youtube.com/watch?v=${videos[0].id}`,
+		)
+			.then(function(video) {
+				if (video.live && !PLAY_LIVE_STREAM) {
+
 					player.commandLock = false;
-					deletePlayerIfNeeded(interaction);
-					if (playOptions) playOptions.delete().catch(console.error);
-					console.error(error);
 					return interaction.followUp(
-						'An error has occurred while trying to get the video ID from youtube.',
+						'Live streams are disabled in this server! Contact farmer to help',
 					);
-				});
-		}
-	});
+				}
+
+				if (video.duration.hours !== 0 && !PLAY_VIDEO_LONGER_THAN_1_HOUR) {
+
+					player.commandLock = false;
+					return interaction.followUp(
+						'Videos longer than 1 hour are disabled in this server! Contact farmer to help',
+					);
+				}
+
+				if (
+					interaction.client.playerManager.get(interaction.guildId).queue
+						.length > MAX_QUEUE_LENGTH
+				) {
+
+					player.commandLock = false;
+					return interaction.followUp(
+						`The queue hit its limit of ${MAX_QUEUE_LENGTH}, please wait a bit before attempting to add more songs`,
+					);
+				}
+
+
+				interaction.client.playerManager
+					.get(interaction.guildId)
+					.queue.push(
+						constructSongObj(video, voiceChannel, interaction.member.user),
+					);
+
+				if (
+					interaction.client.playerManager.get(interaction.guildId)
+						.audioPlayer.state.status !== AudioPlayerStatus.Playing
+				) {
+					handleSubscription(player.queue, interaction, player);
+				}
+				else if (
+					interaction.client.playerManager.get(interaction.guildId)
+						.audioPlayer.state.status === AudioPlayerStatus.Playing
+				) {
+					player.commandLock = false;
+					return interaction.followUp(`Added **${video.title}** to farm`);
+				}
+				return;
+			})
+			.catch(error => {
+				player.commandLock = false;
+				deletePlayerIfNeeded(interaction);
+				console.error(error);
+				return interaction.followUp(
+					'An error has occurred while trying to get the video ID from youtube.',
+				);
+			});
+	}
+
 };
 const handleSubscription = async (queue, interaction, player) => {
 	let voiceChannel = queue[0].voiceChannel;
@@ -271,6 +323,8 @@ const constructSongObj = (video, voiceChannel, user, timestamp) => {
 	return {
 		url: video.url,
 		title: video.title,
+		view: video.views,
+		uploadedAt: video.uploadedAt,
 		rawDuration: video.duration,
 		duration,
 		timestamp,

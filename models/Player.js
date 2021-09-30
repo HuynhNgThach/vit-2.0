@@ -80,10 +80,13 @@ class MusicPlayer {
 		});
 
 		this.audioPlayer.on('stateChange', (oldState, newState) => {
+
+			// next queue
 			if (
 				newState.status === AudioPlayerStatus.Idle &&
                 oldState.status !== AudioPlayerStatus.Idle
 			) {
+				console.log('1');
 				if (this.loopSong) {
 					this.process(this.queue.unshift(this.nowPlaying));
 				}
@@ -98,6 +101,7 @@ class MusicPlayer {
 					}
 					// Finished playing audio
 					if (this.queue.length) {
+						console.log('in the next queue');
 						this.process(this.queue);
 					}
 					else {
@@ -113,20 +117,23 @@ class MusicPlayer {
 				}
 			}
 			else if (newState.status === AudioPlayerStatus.Playing) {
-				const queueHistory = this.textChannel.client.guildData.get(
-					this.textChannel.guildId,
-				).queueHistory;
+				console.log('2');
+				console.log('queue', this.queue);
+				// const queueHistory = this.textChannel.client.guildData.get(
+				// 	this.textChannel.guildId,
+				// ).queueHistory;
 				const playingEmbed = new MessageEmbed()
 					.setThumbnail(this.nowPlaying.thumbnail)
 					.setTitle(this.nowPlaying.title)
 					.setColor('#ff0000')
 					.addField('Duration', ':stopwatch: ' + this.nowPlaying.duration, true)
+					.addField('Views', new Intl.NumberFormat().format(this.nowPlaying.view), true)
 					.setFooter(
 						`Requested by ${this.nowPlaying.memberDisplayName}!`,
 						this.nowPlaying.memberAvatar,
 					);
-				if (queueHistory.length) {
-					playingEmbed.addField('Previous Song', queueHistory[0].title, true);
+				if (this.queue.length) {
+					playingEmbed.addField('Next Song', this.queue[this.queue.length - 1].title, true);
 				}
 				this.textChannel.send({ embeds: [playingEmbed] });
 			}

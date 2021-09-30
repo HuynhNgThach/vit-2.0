@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/HuynhNgThach/vit-2.0/issues"
   },
-   "engines": {
+  "engines": {
     "node": "16.x"
   },
   "homepage": "https://github.com/HuynhNgThach/vit-2.0#readme",
