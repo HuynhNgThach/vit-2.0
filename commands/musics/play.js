@@ -121,6 +121,7 @@ const searchYoutube = async (
 			if (playOptions) {
 				await playOptions.delete().catch(console.error);
 			}
+			return interaction.reply(':x:');
 		});
 
 		playOptionsCollector.on('collect', async i => {
