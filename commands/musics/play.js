@@ -121,7 +121,10 @@ const searchYoutube = async (
 			if (playOptions) {
 				await playOptions.delete().catch(console.error);
 			}
-			// return interaction.followUp(':x:');
+			return interaction.followUp({
+				content: ':x:',
+				ephemeral: true,
+			});
 		});
 
 		playOptionsCollector.on('collect', async i => {
