@@ -38,10 +38,9 @@ module.exports = {
 		if (!interaction.client.guildData.get(interaction.guildId)) {
 			interaction.client.guildData.set(interaction.guildId, createGuildData());
 		}
-		// const message = await interaction.deferReply({
-		// 	fetchReply: true,
-		// });
-		interaction.reply('ok');
+		await interaction.deferReply({
+			fetchReply: true,
+		});
 		// make sure only user in the voice channel can order
 		if (!interaction.member.voice.channel) {
 			interaction.followUp(':duck: vào voice chưa?');
