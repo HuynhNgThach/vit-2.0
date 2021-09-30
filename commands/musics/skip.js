@@ -17,7 +17,7 @@ module.exports = {
 			return;
 		}
 		interaction.reply(
-			`ok skip **${interaction.client.playerManager.get(interaction.guildId).title}**`,
+			`ok skip **${interaction.client.playerManager.get(interaction.guildId).nowPlaying.title}**`,
 		);
 		console.log(player.audioPlayer);
 		player.audioPlayer.stop();
