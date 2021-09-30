@@ -16,6 +16,9 @@
   "bugs": {
     "url": "https://github.com/HuynhNgThach/vit-2.0/issues"
   },
+   "engines": {
+    "node": "16.x"
+  },
   "homepage": "https://github.com/HuynhNgThach/vit-2.0#readme",
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
