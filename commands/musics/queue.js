@@ -22,13 +22,13 @@ module.exports = {
 		const queueClone = Array.from(player.queue);
 		const embeds = [];
 
-		for (let i = 0; i < Math.ceil(queueClone.length / 24); i++) {
-			const playlistArray = queueClone.slice(i * 24, 24 + i * 24);
+		for (let i = 0; i < Math.ceil(queueClone.length / 10); i++) {
+			const playlistArray = queueClone.slice(i * 10, 10 + i * 10);
 			const fields = [];
 
 			playlistArray.forEach((element, index) => {
 				fields.push({
-					name: `${index + 1 + i * 24}`,
+					name: `${index + 1 + i * 10}`,
 					value: `${element.title}`,
 				});
 			});

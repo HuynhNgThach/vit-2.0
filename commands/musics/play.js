@@ -82,7 +82,7 @@ const searchYoutube = async (
 	searchFlag,
 ) => {
 	const limit = searchFlag ? 5 : 1;
-	const videos = await Youtube.search(song, { limit }).catch(
+	const videos = await Youtube.search(song, { limit, safeSearch: true }).catch(
 		async function() {
 			return interaction.followUp(
 				':x: There was a problem searching the video you requested!',
