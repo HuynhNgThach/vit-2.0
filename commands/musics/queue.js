@@ -5,7 +5,7 @@ const { PagesBuilder } = require('discord.js-pages');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('queue')
-		.setDescription('Đang có gì trong farm'),
+		.setDescription('Đang có gì trong farm!'),
 	async execute(interaction) {
 		await interaction.deferReply();
 
