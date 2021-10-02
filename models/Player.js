@@ -123,9 +123,9 @@ class MusicPlayer {
 				// 	this.textChannel.guildId,
 				// ).queueHistory;
 				const playingEmbed = new MessageEmbed()
-					.setThumbnail(this.nowPlaying.thumbnail)
+					.setImage(this.nowPlaying.thumbnail)
 					.setTitle(this.nowPlaying.title)
-					.setColor('#ff0000')
+					.setColor('#e26900')
 					.addField('Duration', ':stopwatch: ' + this.nowPlaying.duration, true)
 					.addField('Views', new Intl.NumberFormat().format(this.nowPlaying.view), true)
 					.setFooter(

@@ -8,7 +8,7 @@ module.exports = {
 	async execute(interaction) {
 		const voiceChannel = interaction.member.voice.channel;
 		if (!voiceChannel) {
-			interaction.reply(':duck: vào voice chat chưa');
+			interaction.reply(':duck: vào voice chat chưa ??');
 			return;
 		}
 		const player = interaction.client.playerManager.get(interaction.guildId);
