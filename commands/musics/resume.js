@@ -12,6 +12,7 @@ module.exports = {
 			return;
 		}
 		const player = interaction.client.playerManager.get(interaction.guildId);
+		console.log(interaction.guildId);
 		if (!player) {
 			interaction.reply('Có bài nào đâu mà resume!');
 			return;
