@@ -29,7 +29,7 @@ module.exports = {
 			playlistArray.forEach((element, index) => {
 				fields.push({
 					name: `${index + 1 + i * 10}`,
-					value: `${element.title}`,
+					value: `${element.title} | Request by: ${element.memberDisplayName}`,
 				});
 			});
 

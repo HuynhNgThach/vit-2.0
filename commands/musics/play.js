@@ -318,7 +318,7 @@ const handleSubscription = async (queue, interaction, player) => {
 		return;
 	}
 	player.process(player.queue);
-	await interaction.followUp(`Added to farm ${title}`);
+	await interaction.followUp(`Đã thêm vào farm ${title}`);
 };
 
 
