@@ -221,6 +221,7 @@ const searchYoutube = async (
 		});
 	}
 	else {
+
 		Youtube.getVideo(
 			`https://www.youtube.com/watch?v=${videos[0].id}`,
 		)
@@ -278,6 +279,7 @@ const searchYoutube = async (
 				player.commandLock = false;
 				deletePlayerIfNeeded(interaction);
 				console.error(error);
+				console.log('debug', videos);
 				return interaction.followUp(
 					'An error has occurred while trying to get the video ID from youtube.',
 				);
