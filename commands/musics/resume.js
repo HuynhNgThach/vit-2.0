@@ -17,7 +17,7 @@ module.exports = {
 			interaction.reply('Có bài nào đâu mà resume!');
 			return;
 		}
-		if (player.audioPlayer.state.status === AudioPlayerStatus.Paused) {
+		if (player.audioPlayer.state.status === AudioPlayerStatus.Playing) {
 			return interaction.reply('Có gì pause đâu ');
 		}
 		const success = player.audioPlayer.unpause();
