@@ -325,6 +325,7 @@ const constructSongObj = (video, voiceChannel, user, timestamp) => {
 	if (duration === '00:00') duration = 'Live Stream';
 	// checks if the user searched for a song using a Spotify URL
 	return {
+		id: video.id,
 		url: video.url,
 		title: video.title,
 		view: video.views,
