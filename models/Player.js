@@ -116,7 +116,7 @@ class MusicPlayer {
 					}
 				}
 			}
-			else if (newState.status === AudioPlayerStatus.Playing) {
+			else if (newState.status === AudioPlayerStatus.Playing && oldState.status !== AudioPlayerStatus.Paused) {
 				console.log('2');
 
 
