@@ -144,6 +144,7 @@ class MusicPlayer {
 					.addComponents(
 						skipBtn,
 					);
+				console.log('set timeout collector: ', `${this.nowPlaying.duration / 60}s`);
 				const collector = this.textChannel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
 
 				collector.on('collect', async i => {
