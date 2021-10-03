@@ -327,7 +327,7 @@ const constructSongObj = (video, voiceChannel, user, timestamp) => {
 	// checks if the user searched for a song using a Spotify URL
 	return {
 		id: video.id,
-		durationSecond: video.duraction,
+		durationSecond: video.duration,
 		url: video.url,
 		title: video.title,
 		view: video.views,
