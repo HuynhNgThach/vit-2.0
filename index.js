@@ -9,6 +9,11 @@ const rest = new REST({ version: 9 }).setToken(BOT_TOKEN);
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 client.commands = new Collection();
 const commands = [];
+let textChannelId = '';
+
+
+const { conitunousGetMessage } = require('./msteam.js');
+const url = `https://southeastasia-prod-2.notifications.teams.microsoft.com/users/8:orgid:e91527c9-2481-45ec-972c-9ceb2226357d/endpoints/88001bde-ee83-4214-aaab-6cbf312993ee/events/poll?cursor=${Math.round(Date.now() / 1000)}&sca=0`;
 
 
 // lấy được list tên file js trong thư ./commands
@@ -54,12 +59,24 @@ for (const file of eventFiles) {
 	}
 }
 
-client.once('ready', () => {
+client.once('ready', (c) => {
 
 	client.playerManager = new Map();
 	client.guildData = new Collection();
 	client.user.setActivity('/', { type: 'WATCHING' });
 	console.log('Bot ready!');
+	c.channels.cache.forEach(channel => {
+		if (!textChannelId && channel.type === 'GUILD_TEXT') {
+			textChannelId = channel.id;
+		}
+	});
+	c.channels.cache.get(textChannelId).send(':duck: Vịt đã online!');
+	try {
+		conitunousGetMessage(url, client, textChannelId);
+	}
+	catch (error) {
+		console.log('ERROR', error);
+	}
 });
 
 
