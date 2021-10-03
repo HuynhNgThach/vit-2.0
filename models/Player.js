@@ -24,65 +24,6 @@ class MusicPlayer {
 		this.volume = 1;
 		this.commandLock = false;
 		this.textChannel;
-		const pauseBtn = new MessageButton()
-			.setCustomId('pause')
-			.setLabel('Pause')
-			.setStyle('PRIMARY');
-		const pausedBtn = new MessageButton()
-			.setCustomId('paused')
-			.setLabel('Paused')
-			.setStyle('SECONDARY');
-		const skipBtn = new MessageButton()
-			.setCustomId('skip')
-			.setLabel('Skip')
-			.setStyle('DANGER');
-		const shuffleBtn = new MessageButton()
-			.setCustomId('shuffle')
-			.setLabel('Shuffle')
-			.setStyle('PRIMARY');
-		this.row = new MessageActionRow()
-			.addComponents(
-				pauseBtn,
-			)
-			.addComponents(shuffleBtn)
-			.addComponents(
-				skipBtn,
-			);
-		this.collector = this.textChannel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
-
-		this.collector.on('collect', async i => {
-			if (i.customId === 'skip') {
-				console.log('skip', i);
-				// await guildQueue.skip();
-				if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
-					await i.update({ content: 'Skipped!', components: [] });
-					this.audioPlayer.stop();
-				}
-
-			}
-			else if (i.customId === 'pause') {
-				// await guildQueue.setPaused(true);
-				if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
-					this.row.spliceComponents(0, 1, pausedBtn);
-					await i.update({ content: ':pause_button:', components: [this.row] });
-					this.audioPlayer.pause();
-					console.log(this.audioPlayer.state);
-				}
-
-			}
-			else if (i.customId === `paused${this.nowPlaying.id}`) {
-				if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Paused) {
-					this.row.spliceComponents(0, 1, pauseBtn);
-					await i.update({ content: ':microphone:', components: [this.row] });
-					this.audioPlayer.unpause();
-					console.log(this.audioPlayer.state);
-				}
-			}
-		});
-
-		this.collector.on('end', collected => {
-			console.log(`Collected ${collected.size} interactions.`);
-		});
 	}
 
 	passConnection(connection) {
@@ -176,7 +117,71 @@ class MusicPlayer {
 				}
 			}
 			else if (newState.status === AudioPlayerStatus.Playing && oldState.status !== AudioPlayerStatus.Paused) {
-				this.collector.resetTimer();
+				console.log('2');
+
+
+				const pauseBtn = new MessageButton()
+					.setCustomId(`pause${this.nowPlaying.id}`)
+					.setLabel('Pause')
+					.setStyle('PRIMARY');
+				const pausedBtn = new MessageButton()
+					.setCustomId(`paused${this.nowPlaying.id}`)
+					.setLabel('Paused')
+					.setStyle('SECONDARY');
+				const skipBtn = new MessageButton()
+					.setCustomId(`skip${this.nowPlaying.id}`)
+					.setLabel('Skip')
+					.setStyle('DANGER');
+				const shuffleBtn = new MessageButton()
+					.setCustomId(`shuffle${this.nowPlaying.id}`)
+					.setLabel('Shuffle')
+					.setStyle('PRIMARY');
+				const row = new MessageActionRow()
+					.addComponents(
+						pauseBtn,
+					)
+					.addComponents(shuffleBtn)
+					.addComponents(
+						skipBtn,
+					);
+				const collector = this.textChannel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
+
+				collector.on('collect', async i => {
+					if (i.customId === `skip${this.nowPlaying.id}`) {
+						console.log('skip', i);
+						// await guildQueue.skip();
+						if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
+							await i.update({ content: 'Skipped!', components: [] });
+							this.audioPlayer.stop();
+							if (!collector.ended) {
+								collector.stop();
+							}
+						}
+
+					}
+					else if (i.customId === `pause${this.nowPlaying.id}`) {
+						// await guildQueue.setPaused(true);
+						if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
+							row.spliceComponents(0, 1, pausedBtn);
+							await i.update({ content: ':pause_button:', components: [row] });
+							this.audioPlayer.pause();
+							console.log(this.audioPlayer.state);
+						}
+
+					}
+					else if (i.customId === `paused${this.nowPlaying.id}`) {
+						if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Paused) {
+							row.spliceComponents(0, 1, pauseBtn);
+							await i.update({ content: ':microphone:', components: [row] });
+							this.audioPlayer.unpause();
+							console.log(this.audioPlayer.state);
+						}
+					}
+				});
+
+				collector.on('end', collected => {
+					console.log(`Collected ${collected.size} interactions.`);
+				});
 				const playingEmbed = new MessageEmbed()
 					.setImage(this.nowPlaying.thumbnail)
 					.setTitle(this.nowPlaying.title)
@@ -190,7 +195,7 @@ class MusicPlayer {
 				if (this.queue.length) {
 					playingEmbed.addField('Next Song', this.queue[this.queue.length - 1].title, true);
 				}
-				this.textChannel.send({ embeds: [playingEmbed], components: [this.row] });
+				this.textChannel.send({ embeds: [playingEmbed], components: [row] });
 			}
 		});
 
