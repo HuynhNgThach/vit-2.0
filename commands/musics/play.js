@@ -321,7 +321,6 @@ const handleSubscription = async (queue, interaction, player) => {
 
 
 const constructSongObj = (video, voiceChannel, user, timestamp) => {
-	console.log('new song: ', video);
 	let duration = video.durationFormatted;
 	if (duration === '00:00') duration = 'Live Stream';
 	// checks if the user searched for a song using a Spotify URL
