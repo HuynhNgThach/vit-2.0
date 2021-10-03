@@ -183,7 +183,7 @@ class MusicPlayer {
 						}
 						else {
 							for (let k = this.queue.length - 1; k > 0; k--) {
-								const j = Math.floor(Math.random() * (i + 1));
+								const j = Math.floor(Math.random() * (k + 1));
 								[this.queue[k], this.queue[j]] = [this.queue[j], this.queue[k]];
 							}
 							await i.update({ content: 'Xào bài xong!', components: [row] });
