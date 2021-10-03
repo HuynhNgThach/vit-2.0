@@ -118,7 +118,7 @@ class MusicPlayer {
 			}
 			else if (newState.status === AudioPlayerStatus.Playing) {
 				console.log('2');
-				console.log('queue', this.queue);
+
 
 				const pauseBtn = new MessageButton()
 					.setCustomId('pause')
@@ -162,6 +162,7 @@ class MusicPlayer {
 							row.spliceComponents(0, 1, pausedBtn);
 							await i.update({ content: ':pause_button:', components: [row] });
 							this.audioPlayer.pause();
+							console.log(this.audioPlayer.state);
 						}
 
 					}
@@ -170,6 +171,7 @@ class MusicPlayer {
 							row.spliceComponents(0, 1, pauseBtn);
 							await i.update({ content: ':microphone:', components: [row] });
 							this.audioPlayer.unpause();
+							console.log(this.audioPlayer.state);
 						}
 					}
 				});
