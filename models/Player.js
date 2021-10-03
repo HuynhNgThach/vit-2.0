@@ -144,7 +144,7 @@ class MusicPlayer {
 					.addComponents(
 						skipBtn,
 					);
-				const collector = this.textChannel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
+				const collector = this.textChannel.createMessageComponentCollector({ componentType: 'BUTTON', time: 600000 });
 
 				collector.on('collect', async i => {
 					if (i.customId === 'skip') {
