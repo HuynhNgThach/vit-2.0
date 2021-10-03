@@ -129,11 +129,11 @@ class MusicPlayer {
 				const pausedBtn = new MessageButton()
 					.setCustomId('paused')
 					.setLabel('Paused')
-					.setStyle('DANGER');
+					.setStyle('SECONDARY');
 				const skipBtn = new MessageButton()
 					.setCustomId('skip')
 					.setLabel('Skip')
-					.setStyle('SUCCESS');
+					.setStyle('DANGER');
 				const shuffleBtn = new MessageButton()
 					.setCustomId('shuffle')
 					.setLabel('Shuffle')
@@ -152,7 +152,11 @@ class MusicPlayer {
 					if (i.customId === 'skip') {
 						console.log('skip', i);
 						// await guildQueue.skip();
-						await i.update({ content: 'Skipped!', components: [] });
+						if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
+							await i.update({ content: 'Skipped!', components: [] });
+							this.audioPlayer.stop();
+						}
+
 					}
 					else if (i.customId === 'pause') {
 						// await guildQueue.setPaused(true);
