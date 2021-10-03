@@ -121,19 +121,19 @@ class MusicPlayer {
 
 
 				const pauseBtn = new MessageButton()
-					.setCustomId(`pause${this.nowPlaying.id}`)
+					.setCustomId('pause')
 					.setLabel('Pause')
 					.setStyle('PRIMARY');
 				const pausedBtn = new MessageButton()
-					.setCustomId(`paused${this.nowPlaying.id}`)
+					.setCustomId('paused')
 					.setLabel('Paused')
 					.setStyle('SECONDARY');
 				const skipBtn = new MessageButton()
-					.setCustomId(`skip${this.nowPlaying.id}`)
+					.setCustomId('skip')
 					.setLabel('Skip')
 					.setStyle('DANGER');
 				const shuffleBtn = new MessageButton()
-					.setCustomId(`shuffle${this.nowPlaying.id}`)
+					.setCustomId('shuffle')
 					.setLabel('Shuffle')
 					.setStyle('PRIMARY');
 				const row = new MessageActionRow()
@@ -147,7 +147,7 @@ class MusicPlayer {
 				const collector = this.textChannel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
 
 				collector.on('collect', async i => {
-					if (i.customId === `skip${this.nowPlaying.id}`) {
+					if (i.customId === 'skip') {
 						console.log('skip', i);
 						// await guildQueue.skip();
 						if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
@@ -159,7 +159,7 @@ class MusicPlayer {
 						}
 
 					}
-					else if (i.customId === `pause${this.nowPlaying.id}`) {
+					else if (i.customId === 'pause') {
 						// await guildQueue.setPaused(true);
 						if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
 							row.spliceComponents(0, 1, pausedBtn);
@@ -169,12 +169,24 @@ class MusicPlayer {
 						}
 
 					}
-					else if (i.customId === `paused${this.nowPlaying.id}`) {
+					else if (i.customId === 'paused') {
 						if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Paused) {
 							row.spliceComponents(0, 1, pauseBtn);
 							await i.update({ content: ':microphone:', components: [row] });
 							this.audioPlayer.unpause();
 							console.log(this.audioPlayer.state);
+						}
+					}
+					else if (i.customId === 'shuffle') {
+						if (this.queue.length < 1) {
+							await i.update({ content: 'Có bài nào đâu mà xào', components: [row] });
+						}
+						else {
+							for (let k = this.queue.length - 1; k > 0; k--) {
+								const j = Math.floor(Math.random() * (i + 1));
+								[this.queue[k], this.queue[j]] = [this.queue[j], this.queue[k]];
+							}
+							await i.update({ content: 'Xào bài xong!', components: [row] });
 						}
 					}
 				});
