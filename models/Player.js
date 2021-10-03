@@ -25,19 +25,19 @@ class MusicPlayer {
 		this.commandLock = false;
 		this.textChannel;
 		const pauseBtn = new MessageButton()
-			.setCustomId(`pause${this.nowPlaying.id}`)
+			.setCustomId('pause')
 			.setLabel('Pause')
 			.setStyle('PRIMARY');
 		const pausedBtn = new MessageButton()
-			.setCustomId(`paused${this.nowPlaying.id}`)
+			.setCustomId('paused')
 			.setLabel('Paused')
 			.setStyle('SECONDARY');
 		const skipBtn = new MessageButton()
-			.setCustomId(`skip${this.nowPlaying.id}`)
+			.setCustomId('skip')
 			.setLabel('Skip')
 			.setStyle('DANGER');
 		const shuffleBtn = new MessageButton()
-			.setCustomId(`shuffle${this.nowPlaying.id}`)
+			.setCustomId('shuffle')
 			.setLabel('Shuffle')
 			.setStyle('PRIMARY');
 		this.row = new MessageActionRow()
@@ -51,7 +51,7 @@ class MusicPlayer {
 		this.collector = this.textChannel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
 
 		this.collector.on('collect', async i => {
-			if (i.customId === `skip${this.nowPlaying.id}`) {
+			if (i.customId === 'skip') {
 				console.log('skip', i);
 				// await guildQueue.skip();
 				if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
@@ -60,7 +60,7 @@ class MusicPlayer {
 				}
 
 			}
-			else if (i.customId === `pause${this.nowPlaying.id}`) {
+			else if (i.customId === 'pause') {
 				// await guildQueue.setPaused(true);
 				if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
 					this.row.spliceComponents(0, 1, pausedBtn);
