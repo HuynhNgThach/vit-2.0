@@ -119,9 +119,7 @@ class MusicPlayer {
 			else if (newState.status === AudioPlayerStatus.Playing) {
 				console.log('2');
 				console.log('queue', this.queue);
-				// const queueHistory = this.textChannel.client.guildData.get(
-				// 	this.textChannel.guildId,
-				// ).queueHistory;
+
 				const pauseBtn = new MessageButton()
 					.setCustomId('pause')
 					.setLabel('Pause')
@@ -160,13 +158,19 @@ class MusicPlayer {
 					}
 					else if (i.customId === 'pause') {
 						// await guildQueue.setPaused(true);
-						row.spliceComponents(0, 1, pausedBtn);
-						await i.update({ components: [row] });
+						if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
+							row.spliceComponents(0, 1, pausedBtn);
+							await i.update({ content: ':pause_button:', components: [row] });
+							this.audioPlayer.pause();
+						}
+
 					}
 					else if (i.customId === 'paused') {
-						// await guildQueue.setPaused(false);
-						row.spliceComponents(0, 1, pauseBtn);
-						await i.update({ components: [row] });
+						if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Paused) {
+							row.spliceComponents(0, 1, pauseBtn);
+							await i.update({ content: ':microphone:', components: [row] });
+							this.audioPlayer.unpause();
+						}
 					}
 				});
 
