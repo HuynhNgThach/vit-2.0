@@ -10,7 +10,7 @@ const {
 const { setTimeout } = require('timers');
 const { promisify } = require('util');
 const ytdl = require('ytdl-core');
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
 const wait = promisify(setTimeout);
 
 class MusicPlayer {
@@ -122,6 +122,53 @@ class MusicPlayer {
 				// const queueHistory = this.textChannel.client.guildData.get(
 				// 	this.textChannel.guildId,
 				// ).queueHistory;
+				const pauseBtn = new MessageButton()
+					.setCustomId('pause')
+					.setLabel('Pause')
+					.setStyle('PRIMARY');
+				const pausedBtn = new MessageButton()
+					.setCustomId('paused')
+					.setLabel('Paused')
+					.setStyle('DANGER');
+				const skipBtn = new MessageButton()
+					.setCustomId('skip')
+					.setLabel('Skip')
+					.setStyle('SUCCESS');
+				const shuffleBtn = new MessageButton()
+					.setCustomId('shuffle')
+					.setLabel('Shuffle')
+					.setStyle('PRIMARY');
+				const row = new MessageActionRow()
+					.addComponents(
+						pauseBtn,
+					)
+					.addComponents(shuffleBtn)
+					.addComponents(
+						skipBtn,
+					);
+				const collector = this.textChannel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
+
+				collector.on('collect', async i => {
+					if (i.customId === 'skip') {
+						console.log('skip', i);
+						// await guildQueue.skip();
+						await i.update({ content: 'Skipped!', components: [] });
+					}
+					else if (i.customId === 'pause') {
+						// await guildQueue.setPaused(true);
+						row.spliceComponents(0, 1, pausedBtn);
+						await i.update({ components: [row] });
+					}
+					else if (i.customId === 'paused') {
+						// await guildQueue.setPaused(false);
+						row.spliceComponents(0, 1, pauseBtn);
+						await i.update({ components: [row] });
+					}
+				});
+
+				collector.on('end', collected => {
+					console.log(`Collected ${collected.size} interactions.`);
+				});
 				const playingEmbed = new MessageEmbed()
 					.setImage(this.nowPlaying.thumbnail)
 					.setTitle(this.nowPlaying.title)
@@ -135,7 +182,7 @@ class MusicPlayer {
 				if (this.queue.length) {
 					playingEmbed.addField('Next Song', this.queue[this.queue.length - 1].title, true);
 				}
-				this.textChannel.send({ embeds: [playingEmbed] });
+				this.textChannel.send({ embeds: [playingEmbed], components: [row] });
 			}
 		});
 

@@ -93,13 +93,13 @@ const searchYoutube = async (
 	if (!videos) {
 		player.commandLock = false;
 		return interaction.followUp(
-			':x: I had some trouble finding what you were looking for, please try again or be more specific.',
+			':x: :duck: :x: 301',
 		);
 	}
 	if (searchFlag && videos.length < 5) {
 		player.commandLock = false;
 		return interaction.followUp(
-			':x: I had some trouble finding what you were looking for, please try again or be more specific.',
+			':x: :duck: :x: 301',
 		);
 	}
 	if (searchFlag) {
@@ -122,7 +122,7 @@ const searchYoutube = async (
 				await playOptions.delete().catch(console.error);
 			}
 			return interaction.followUp({
-				content: ':x:',
+				content: ':duck:',
 				ephemeral: true,
 			});
 		});
@@ -182,7 +182,7 @@ const searchYoutube = async (
 							}
 							player.commandLock = false;
 							return interaction.followUp(
-								`The queue hit its limit of ${MAX_QUEUE_LENGTH}, please wait a bit before attempting to add more songs`,
+								'Farm đông đúc quá rồi, k thể add thêm đâu!',
 							);
 						}
 
@@ -214,7 +214,7 @@ const searchYoutube = async (
 						if (playOptions) playOptions.delete().catch(console.error);
 						console.error(error);
 						return interaction.followUp(
-							'An error has occurred while trying to get the video ID from youtube.',
+							':x: :duck: :x: 300',
 						);
 					});
 			}
