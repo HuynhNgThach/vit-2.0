@@ -70,7 +70,7 @@ client.once('ready', (c) => {
 			textChannelId = channel.id;
 		}
 	});
-	c.channels.cache.get(textChannelId).send(':duck: Vịt đã online!');
+	// c.channels.cache.get(textChannelId).send(':duck: Vịt đã online!');
 	try {
 		conitunousGetMessage(url, client, textChannelId);
 	}
