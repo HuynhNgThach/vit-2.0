@@ -21,7 +21,7 @@ module.exports = {
 		}
 		const success = player.audioPlayer.pause();
 		if (success) {
-			return interaction.reply(':pause_button: Pause rồi đó, dùng resum để k pause nữa :))');
+			return interaction.reply(':pause_button: Pause rồi đó, dùng resume để k pause nữa :))');
 		}
 		return interaction.reply(
 			':duck: Pause không được ta ??',
