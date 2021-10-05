@@ -288,6 +288,9 @@ const searchYoutube = async (
 				);
 			});
 	}
+	else {
+		console.log('ERROR || ', videos);
+	}
 
 };
 const handleSubscription = async (queue, interaction, player) => {
