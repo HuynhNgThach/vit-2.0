@@ -68,10 +68,16 @@ module.exports = {
 		player.commandLock = true;
 
 		// seatch youtube song
-		await searchYoutube(song,
-			interaction,
-			player,
-			interaction.member.voice.channel, search);
+		try {
+			await searchYoutube(song,
+				interaction,
+				player,
+				interaction.member.voice.channel, search);
+		}
+		catch (error) {
+			console.log('ERROR||', error);
+		}
+
 	},
 };
 const searchYoutube = async (
@@ -219,8 +225,7 @@ const searchYoutube = async (
 			}
 		});
 	}
-	else {
-
+	else if (videos) {
 		Youtube.getVideo(
 			`https://www.youtube.com/watch?v=${videos[0].id}`,
 		)
