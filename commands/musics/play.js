@@ -107,6 +107,7 @@ const searchYoutube = async (
 			':x: :duck: :x: 301',
 		);
 	}
+	console.log('video list: ', videos);
 	if (searchFlag) {
 		const vidNameArr = [];
 		for (let i = 0; i < videos.length; i++) {
