@@ -67,6 +67,47 @@ module.exports = {
 		}
 		player.commandLock = true;
 
+
+		if (isYouTubeVideoURL(query)) {
+			const timestampRegex = /t=([^#&\n\r]+)/g;
+			let timestamp = timestampRegex.exec(query);
+			if (!timestamp) {
+				timestamp = 0;
+			}
+			else {
+				timestamp = timestamp[1];
+				if (timestamp.endsWith('s')) {
+					timestamp = timestamp.substring(0, timestamp.indexOf('s'));
+				}
+				if (!Number(timestamp)) timestamp = 0;
+			}
+			timestamp = Number(timestamp);
+
+			const video = await Youtube.getVideo(query).catch(function() {
+				deletePlayerIfNeeded(interaction);
+				interaction.followUp(
+					':x: There was a problem getting the video you provided!',
+				);
+			});
+			if (!video) return;
+
+			player.queue.push(
+				constructSongObj(
+					video,
+					interaction.member.voice.channel,
+					interaction.member.user,
+					timestamp,
+				),
+			);
+
+
+			if (player.audioPlayer.state.status !== AudioPlayerStatus.Playing) {
+				handleSubscription(player.queue, interaction, player);
+				return;
+			}
+			return;
+		}
+
 		// seatch youtube song
 		try {
 			await searchYoutube(song,
@@ -80,6 +121,11 @@ module.exports = {
 
 	},
 };
+
+const isYouTubeVideoURL = arg =>
+	arg.match(
+		/^(http(s)?:\/\/)?(m.)?((w){3}.)?(music.)?youtu(be|.be)?(\.com)?\/.+/,
+	);
 const searchYoutube = async (
 	song,
 	interaction,
