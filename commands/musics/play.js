@@ -61,7 +61,7 @@ module.exports = {
 			player = new Player();
 			interaction.client.playerManager.set(interaction.guildId, player);
 		}
-		if (player.commandLock) {
+		if (false) { // tạm không check lock nữa thử
 			return interaction.followUp(':duck: busy');
 
 		}
