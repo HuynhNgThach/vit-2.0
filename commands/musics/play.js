@@ -83,8 +83,9 @@ module.exports = {
 			}
 			timestamp = Number(timestamp);
 
-			const video = await Youtube.getVideo(query).catch(function() {
+			const video = await Youtube.getVideo(query).catch(function(error) {
 				deletePlayerIfNeeded(interaction);
+				console.log('vit ', error);
 				interaction.followUp(
 					':x: There was a problem getting the video you provided!',
 				);
