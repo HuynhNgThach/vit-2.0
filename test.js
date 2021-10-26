@@ -1,8 +1,12 @@
 const yts = require('yt-search');
-async function test() {
-	const r = await yts('phi hành gia');
+const url = require('url');
 
-	console.log(r.videos.slice(0, 3));
+async function test() {
+	const r = await yts({ videoId: 'tZY-iWc242c' });
+
+	console.log(r);
 }
 test();
+const query = url.parse('https://www.youtube.com/watch?v=Xi2_K4aqxB4&ab_channel=NespChill%E3%83%85', true)?.query;
+console.log(query);
 

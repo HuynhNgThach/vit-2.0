@@ -4,6 +4,7 @@ const Player = require('../../models/Player');
 const Youtube = require('youtube-sr').default;
 const createGuildData = require('../../models/GuildData');
 const yts = require('yt-search');
+const url = require('url');
 const { AudioPlayerStatus, joinVoiceChannel, entersState, VoiceConnectionStatus } = require('@discordjs/voice');
 
 let {
@@ -70,27 +71,9 @@ module.exports = {
 
 
 		if (isYouTubeVideoURL(query)) {
-			const timestampRegex = /t=([^#&\n\r]+)/g;
-			let timestamp = timestampRegex.exec(query);
-			if (!timestamp) {
-				timestamp = 0;
-			}
-			else {
-				timestamp = timestamp[1];
-				if (timestamp.endsWith('s')) {
-					timestamp = timestamp.substring(0, timestamp.indexOf('s'));
-				}
-				if (!Number(timestamp)) timestamp = 0;
-			}
-			timestamp = Number(timestamp);
+			const q = url.parse(query, true)?.query;
 
-			const video = await Youtube.getVideo(query).catch(function(error) {
-				deletePlayerIfNeeded(interaction);
-				console.log('vit ', error);
-				interaction.followUp(
-					':x: There was a problem getting the video you provided!',
-				);
-			});
+			const video = await yts({ videoId: q.v });
 			if (!video) return;
 
 			player.queue.push(
@@ -98,7 +81,6 @@ module.exports = {
 					video,
 					interaction.member.voice.channel,
 					interaction.member.user,
-					timestamp,
 				),
 			);
 
@@ -342,7 +324,7 @@ const handleSubscription = async (queue, interaction, player) => {
 	}
 	catch (err) {
 		player.commandLock = false;
-		deletePlayerIfNeeded(interaction);
+		// deletePlayerIfNeeded(interaction);
 		console.error(err);
 		await interaction.followUp({ content: 'Failed to join your channel!' });
 		return;
