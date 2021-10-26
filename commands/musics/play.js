@@ -74,7 +74,7 @@ module.exports = {
 			const q = url.parse(query, true)?.query;
 
 			const video = await yts({ videoId: q.v });
-			if (!video) return;
+			if (!video) return interaction.followUp(':x:');
 
 			player.queue.push(
 				constructSongObj(
@@ -87,9 +87,9 @@ module.exports = {
 
 			if (player.audioPlayer.state.status !== AudioPlayerStatus.Playing) {
 				handleSubscription(player.queue, interaction, player);
-				return;
+
 			}
-			return;
+			return interaction.followUp(`Added **${video.title}** to farm`);
 		}
 
 		// seatch youtube song
