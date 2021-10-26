@@ -3,6 +3,7 @@ const { MessageSelectMenu, MessageActionRow } = require('discord.js');
 const Player = require('../../models/Player');
 const Youtube = require('youtube-sr').default;
 const createGuildData = require('../../models/GuildData');
+const yts = require('yt-search');
 const { AudioPlayerStatus, joinVoiceChannel, entersState, VoiceConnectionStatus } = require('@discordjs/voice');
 
 let {
@@ -134,14 +135,16 @@ const searchYoutube = async (
 	voiceChannel,
 	searchFlag,
 ) => {
-	const limit = searchFlag ? 5 : 1;
-	const videos = await Youtube.search(song, { limit, safeSearch: true }).catch(
-		async function() {
-			return interaction.followUp(
-				':x: There was a problem searching the video you requested!',
-			);
-		},
-	);
+	// const limit = searchFlag ? 5 : 1;
+	// const videos = await Youtube.search(song, { limit, safeSearch: true }).catch(
+	// 	async function() {
+	// 		return interaction.followUp(
+	// 			':x: There was a problem searching the video you requested!',
+	// 		);
+	// 	},
+	// );
+	const res = await yts(song);
+	const videos = res?.videos;
 	if (!videos) {
 		player.commandLock = false;
 		return interaction.followUp(
@@ -155,7 +158,7 @@ const searchYoutube = async (
 		);
 	}
 	console.log('video list: ', videos);
-	if (searchFlag) {
+	if (false) {
 		const vidNameArr = [];
 		for (let i = 0; i < videos.length; i++) {
 			vidNameArr.push(videos[i].title.slice(0, 99));
@@ -274,67 +277,40 @@ const searchYoutube = async (
 		});
 	}
 	else if (videos) {
-		Youtube.getVideo(
-			`https://www.youtube.com/watch?v=${videos[0].id}`,
-		)
-			.then(function(video) {
-				if (video.live && !PLAY_LIVE_STREAM) {
 
-					player.commandLock = false;
-					return interaction.followUp(
-						'Live streams are disabled in this server! Contact farmer to help',
-					);
-				}
+		if (
+			interaction.client.playerManager.get(interaction.guildId).queue
+				.length > MAX_QUEUE_LENGTH
+		) {
 
-				if (video.duration.hours !== 0 && !PLAY_VIDEO_LONGER_THAN_1_HOUR) {
-
-					player.commandLock = false;
-					return interaction.followUp(
-						'Videos longer than 1 hour are disabled in this server! Contact farmer to help',
-					);
-				}
-
-				if (
-					interaction.client.playerManager.get(interaction.guildId).queue
-						.length > MAX_QUEUE_LENGTH
-				) {
-
-					player.commandLock = false;
-					return interaction.followUp(
-						`The queue hit its limit of ${MAX_QUEUE_LENGTH}, please wait a bit before attempting to add more songs`,
-					);
-				}
+			player.commandLock = false;
+			return interaction.followUp(
+				`The queue hit its limit of ${MAX_QUEUE_LENGTH}, please wait a bit before attempting to add more songs`,
+			);
+		}
 
 
-				interaction.client.playerManager
-					.get(interaction.guildId)
-					.queue.push(
-						constructSongObj(video, voiceChannel, interaction.member.user),
-					);
+		interaction.client.playerManager
+			.get(interaction.guildId)
+			.queue.push(
+				constructSongObj(videos[0], voiceChannel, interaction.member.user),
+			);
 
-				if (
-					interaction.client.playerManager.get(interaction.guildId)
-						.audioPlayer.state.status !== AudioPlayerStatus.Playing
-				) {
-					handleSubscription(player.queue, interaction, player);
-				}
-				else if (
-					interaction.client.playerManager.get(interaction.guildId)
-						.audioPlayer.state.status === AudioPlayerStatus.Playing
-				) {
-					player.commandLock = false;
-					return interaction.followUp(`Added **${video.title}** to farm`);
-				}
-				return;
-			})
-			.catch(error => {
-				player.commandLock = false;
-				deletePlayerIfNeeded(interaction);
-				console.error(error);
-				return interaction.followUp(
-					'An error has occurred while trying to get the video ID from youtube.',
-				);
-			});
+		if (
+			interaction.client.playerManager.get(interaction.guildId)
+				.audioPlayer.state.status !== AudioPlayerStatus.Playing
+		) {
+			handleSubscription(player.queue, interaction, player);
+		}
+		else if (
+			interaction.client.playerManager.get(interaction.guildId)
+				.audioPlayer.state.status === AudioPlayerStatus.Playing
+		) {
+			player.commandLock = false;
+			return interaction.followUp(`Added **${videos[0].title}** to farm`);
+		}
+		return;
+
 	}
 	else {
 		console.log('ERROR || ', videos);
@@ -381,16 +357,16 @@ const constructSongObj = (video, voiceChannel, user, timestamp) => {
 	if (duration === '00:00') duration = 'Live Stream';
 	// checks if the user searched for a song using a Spotify URL
 	return {
-		id: video.id,
-		durationSecond: video.duration,
+		id: video.videoId,
+		durationSecond: video.seconds,
 		url: video.url,
 		title: video.title,
 		view: video.views,
-		uploadedAt: video.uploadedAt,
-		rawDuration: video.duration,
+		uploadedAt: video.ago,
+		rawDuration: 0,
 		duration,
 		timestamp,
-		thumbnail: video.thumbnail.url,
+		thumbnail: video.thumbnail,
 		voiceChannel,
 		memberDisplayName: user.username,
 		memberAvatar: user.avatarURL('webp', false, 16),
