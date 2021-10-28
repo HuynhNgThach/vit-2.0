@@ -74,7 +74,7 @@ module.exports = {
 			if (isYouTubeVideoURL(query)) {
 				const q = url.parse(query, true)?.query;
 
-				const video = await yts({ videoId: q.v });
+				const video = await yts(q.v);
 				if (!video) return interaction.followUp(':x:');
 
 				player.queue.push(
