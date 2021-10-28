@@ -73,24 +73,25 @@ module.exports = {
 
 			if (isYouTubeVideoURL(query)) {
 				const q = url.parse(query, true)?.query;
+				song = q.v;
 
-				const video = await yts(q.v);
-				if (!video) return interaction.followUp(':x:');
+				// const video = await yts(q.v);
+				// if (!video) return interaction.followUp(':x:');
 
-				player.queue.push(
-					constructSongObj(
-						video,
-						interaction.member.voice.channel,
-						interaction.member.user,
-					),
-				);
+				// player.queue.push(
+				// 	constructSongObj(
+				// 		video,
+				// 		interaction.member.voice.channel,
+				// 		interaction.member.user,
+				// 	),
+				// );
 
 
-				if (player.audioPlayer.state.status !== AudioPlayerStatus.Playing) {
-					handleSubscription(player.queue, interaction, player);
+				// if (player.audioPlayer.state.status !== AudioPlayerStatus.Playing) {
+				// 	handleSubscription(player.queue, interaction, player);
 
-				}
-				return interaction.followUp(`Added **${video.title}** to farm`);
+				// }
+				// return interaction.followUp(`Added **${video.title}** to farm`);
 			}
 			await searchYoutube(song,
 				interaction,
