@@ -37,63 +37,61 @@ module.exports = {
 				.setDescription(':notes: bài gì lẹ lên nào!')
 				.setRequired(true)),
 	async execute(interaction) {
-		if (!interaction.client.guildData.get(interaction.guildId)) {
-			interaction.client.guildData.set(interaction.guildId, createGuildData());
-		}
-		await interaction.deferReply({
-			fetchReply: true,
-		});
-		// make sure only user in the voice channel can order
-		if (!interaction.member.voice.channel) {
-			interaction.followUp(':duck: vào voice chưa?');
-			return;
-		}
+		try {
+			if (!interaction.client.guildData.get(interaction.guildId)) {
+				interaction.client.guildData.set(interaction.guildId, createGuildData());
+			}
+			await interaction.deferReply({
+				fetchReply: true,
+			});
+			// make sure only user in the voice channel can order
+			if (!interaction.member.voice.channel) {
+				interaction.followUp(':duck: vào voice chưa?');
+				return;
+			}
 
-		const query = interaction.options.get('query').value;
-		const splitQuery = query.split(' ');
-		const search = splitQuery[splitQuery.length - 1] === '-s';
-		let song = query;
-		if (search) {
-			splitQuery.pop();
-			song = splitQuery.join(' ');
-		}
+			const query = interaction.options.get('query').value;
+			const splitQuery = query.split(' ');
+			const search = splitQuery[splitQuery.length - 1] === '-s';
+			let song = query;
+			if (search) {
+				splitQuery.pop();
+				song = splitQuery.join(' ');
+			}
 
-		let player = interaction.client.playerManager.get(interaction.guildId);
-		if (!player) {
-			player = new Player();
-			interaction.client.playerManager.set(interaction.guildId, player);
-		}
-		if (false) { // tạm không check lock nữa thử
-			return interaction.followUp(':duck: busy');
-
-		}
-		player.commandLock = true;
-
-
-		if (isYouTubeVideoURL(query)) {
-			const q = url.parse(query, true)?.query;
-
-			const video = await yts({ videoId: q.v });
-			if (!video) return interaction.followUp(':x:');
-
-			player.queue.push(
-				constructSongObj(
-					video,
-					interaction.member.voice.channel,
-					interaction.member.user,
-				),
-			);
-
-
-			if (player.audioPlayer.state.status !== AudioPlayerStatus.Playing) {
-				handleSubscription(player.queue, interaction, player);
+			let player = interaction.client.playerManager.get(interaction.guildId);
+			if (!player) {
+				player = new Player();
+				interaction.client.playerManager.set(interaction.guildId, player);
+			}
+			if (false) { // tạm không check lock nữa thử
+				return interaction.followUp(':duck: busy');
 
 			}
-			return interaction.followUp(`Added **${video.title}** to farm`);
-		}
+			player.commandLock = true;
 
-		// seatch youtube song
-		try {
+
+			if (isYouTubeVideoURL(query)) {
+				const q = url.parse(query, true)?.query;
+
+				const video = await yts({ videoId: q.v });
+				if (!video) return interaction.followUp(':x:');
+
+				player.queue.push(
+					constructSongObj(
+						video,
+						interaction.member.voice.channel,
+						interaction.member.user,
+					),
+				);
+
+
+				if (player.audioPlayer.state.status !== AudioPlayerStatus.Playing) {
+					handleSubscription(player.queue, interaction, player);
+
+				}
+				return interaction.followUp(`Added **${video.title}** to farm`);
+			}
 			await searchYoutube(song,
 				interaction,
 				player,
