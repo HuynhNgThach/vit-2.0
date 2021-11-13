@@ -35,7 +35,6 @@ class MusicPlayer {
                     newState.closeCode === 4014
 				) {
 					try {
-						console.log('try enterstate');
 						await entersState(
 							this.connection,
 							VoiceConnectionStatus.Connecting,
@@ -43,7 +42,6 @@ class MusicPlayer {
 						);
 					}
 					catch {
-						console.log('error try enterstate');
 						this.connection.destroy();
 					}
 				}
@@ -82,7 +80,6 @@ class MusicPlayer {
 		});
 
 		this.audioPlayer.on('stateChange', (oldState, newState) => {
-			console.log('stateChange', oldState, newState);
 
 			// next queue
 			if (
@@ -118,84 +115,7 @@ class MusicPlayer {
 				}
 			}
 			else if (newState.status === AudioPlayerStatus.Playing && oldState.status !== AudioPlayerStatus.Paused) {
-				console.log('2');
 
-
-				// const pauseBtn = new MessageButton()
-				// 	.setCustomId('pause')
-				// 	.setLabel('Pause')
-				// 	.setStyle('PRIMARY');
-				// const pausedBtn = new MessageButton()
-				// 	.setCustomId('paused')
-				// 	.setLabel('Paused')
-				// 	.setStyle('SECONDARY');
-				// const skipBtn = new MessageButton()
-				// 	.setCustomId('skip')
-				// 	.setLabel('Skip')
-				// 	.setStyle('DANGER');
-				// const shuffleBtn = new MessageButton()
-				// 	.setCustomId('shuffle')
-				// 	.setLabel('Shuffle')
-				// 	.setStyle('PRIMARY');
-				// const row = new MessageActionRow()
-				// 	.addComponents(
-				// 		pauseBtn,
-				// 	)
-				// 	.addComponents(shuffleBtn)
-				// 	.addComponents(
-				// 		skipBtn,
-				// 	);
-				// console.log('set timeout collector: ', `${this.nowPlaying.durationSecond }ms`, this.nowPlaying);
-				// const collector = this.textChannel.createMessageComponentCollector({ componentType: 'BUTTON', time: this.nowPlaying.durationSecond });
-
-				// collector.on('collect', async i => {
-				// 	if (i.customId === 'skip') {
-				// 		console.log('skip', i);
-				// 		// await guildQueue.skip();
-				// 		if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
-				// 			await i.update({ content: 'Skipped!', components: [] });
-				// 			this.audioPlayer.stop();
-				// 			if (!collector.ended) {
-				// 				collector.stop();
-				// 			}
-				// 		}
-
-				// 	}
-				// 	else if (i.customId === 'pause') {
-				// 		// await guildQueue.setPaused(true);
-				// 		if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
-				// 			row.spliceComponents(0, 1, pausedBtn);
-				// 			await i.update({ content: ':pause_button:', components: [row] });
-				// 			this.audioPlayer.pause();
-				// 			console.log(this.audioPlayer.state);
-				// 		}
-
-				// 	}
-				// 	else if (i.customId === 'paused') {
-				// 		if (this.audioPlayer && this.audioPlayer.state.status === AudioPlayerStatus.Paused) {
-				// 			row.spliceComponents(0, 1, pauseBtn);
-				// 			await i.update({ content: ':microphone:', components: [row] });
-				// 			this.audioPlayer.unpause();
-				// 			console.log(this.audioPlayer.state);
-				// 		}
-				// 	}
-				// 	else if (i.customId === 'shuffle') {
-				// 		if (this.queue.length < 1) {
-				// 			await i.update({ content: 'Có bài nào đâu mà xào', components: [row] });
-				// 		}
-				// 		else {
-				// 			for (let k = this.queue.length - 1; k > 0; k--) {
-				// 				const j = Math.floor(Math.random() * (k + 1));
-				// 				[this.queue[k], this.queue[j]] = [this.queue[j], this.queue[k]];
-				// 			}
-				// 			await i.update({ content: 'Xào bài xong!', components: [row] });
-				// 		}
-				// 	}
-				// });
-
-				// collector.on('end', collected => {
-				// 	console.log(`Collected ${collected.size} interactions.`);
-				// });
 				const playingEmbed = new MessageEmbed()
 					.setImage(this.nowPlaying.thumbnail)
 					.setTitle(this.nowPlaying.title)

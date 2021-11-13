@@ -6,7 +6,7 @@ const createGuildData = require('../../models/GuildData');
 const yts = require('yt-search');
 const url = require('url');
 const { AudioPlayerStatus, joinVoiceChannel, entersState, VoiceConnectionStatus } = require('@discordjs/voice');
-const { setData } = require('../../keyv');
+const Song = require('../../models/Song.js');
 
 let {
 	PLAY_LIVE_STREAM, PLAY_VIDEO_LONGER_THAN_1_HOUR, MAX_QUEUE_LENGTH, AUTO_SHUFFLE_YOUTUBE_PLAYLIST, LEAVE_TIMEOUT, MAX_RESPONSE_TIME, DELETE_OLD_PLAY_MESSAGE,
@@ -309,10 +309,20 @@ const handleSubscription = async (queue, interaction, player) => {
 const constructSongObj = async (video, voiceChannel, user, timestamp) => {
 	let duration = video.duration.toString();
 	if (duration === '00:00') duration = 'Live Stream';
-
+	console.log(video);
 	// checks if the user searched for a song using a Spotify URL
-	console.log('video', video);
-	await setData({ video, user });
+	const song = new Song({
+		name: video.title,
+		requestBy: user.username,
+		requesterAvatar: user.avatarURL('webp', false, 16),
+		date: Date.now(),
+		type: 'YOUTUBE', // YOUTUBE, SPOTIFY
+		duration: video.duration.toString(),
+		image: video.image,
+		thumbnail: video.thumbnail,
+		id: video.videoId,
+	});
+	await song.save();
 	return {
 		id: video.videoId,
 		durationSecond: video.seconds,

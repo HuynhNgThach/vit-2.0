@@ -34,7 +34,7 @@
     "dotenv": "^10.0.0",
     "eslint": "^7.32.0",
     "ffmpeg-static": "^4.4.0",
-    "jsoning": "^0.12.22",
+    "mongoose": "^6.0.12",
     "nodemon": "^2.0.15",
     "sodium": "^3.0.2",
     "youtube-sr": "^4.1.9",

@@ -34,7 +34,7 @@ require('dotenv').config();
 const fs = require('fs');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { CLIENT_ID } = require('./config.js');
+const { CLIENT_ID, MONGO_URL } = require('./config.js');
 const { Client, Intents, Collection } = require('discord.js');
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const rest = new REST({ version: 9 }).setToken(BOT_TOKEN);
@@ -42,6 +42,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 client.commands = new Collection();
 const commands = [];
 let textChannelId = '';
+const mongoose = require('mongoose');
 
 
 const { continuousGetMessage } = require('./msteam.js');
@@ -107,6 +108,9 @@ client.once('ready', (c) => {
 	client.channels.cache.get('909085755845017661').send('Vit đã online :duck:');
 	try {
 		continuousGetMessage(url, client);
+		// connect database
+		mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+		mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 	}
 	catch (error) {
 		console.log('ERROR', error);
