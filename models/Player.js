@@ -10,7 +10,7 @@ const {
 const { setTimeout } = require('timers');
 const { promisify } = require('util');
 const ytdl = require('ytdl-core');
-const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const wait = promisify(setTimeout);
 
 class MusicPlayer {
@@ -35,6 +35,7 @@ class MusicPlayer {
                     newState.closeCode === 4014
 				) {
 					try {
+						console.log('try enterstate');
 						await entersState(
 							this.connection,
 							VoiceConnectionStatus.Connecting,
@@ -42,6 +43,7 @@ class MusicPlayer {
 						);
 					}
 					catch {
+						console.log('error try enterstate');
 						this.connection.destroy();
 					}
 				}
@@ -80,13 +82,13 @@ class MusicPlayer {
 		});
 
 		this.audioPlayer.on('stateChange', (oldState, newState) => {
+			console.log('stateChange', oldState, newState);
 
 			// next queue
 			if (
 				newState.status === AudioPlayerStatus.Idle &&
                 oldState.status !== AudioPlayerStatus.Idle
 			) {
-				console.log('1');
 				if (this.loopSong) {
 					this.process(this.queue.unshift(this.nowPlaying));
 				}
@@ -101,7 +103,6 @@ class MusicPlayer {
 					}
 					// Finished playing audio
 					if (this.queue.length) {
-						console.log('in the next queue');
 						this.process(this.queue);
 					}
 					else {
@@ -237,18 +238,15 @@ class MusicPlayer {
 
 		const song = this.queue.shift();
 		this.nowPlaying = song;
-		if (this.commandLock) this.commandLock = false;
 		try {
 			// const resource = await this.createAudioResource(song.url);
-			const stream = ytdl(song.url, {
-				filter: 'audio',
-				quality: 'highestaudio',
-				highWaterMark: 1 << 25,
+			const stream = ytdl(song.url, { filter: 'audioonly' });
+			const resource = createAudioResource(stream);
+			this.audioPlayer.play(resource, { inputType: StreamType.Arbitrary });
+			this.audioPlayer.on('error', error => {
+				console.error(`Error: ${error.message} with resource`, error);
+
 			});
-			const resource = createAudioResource(stream, {
-				inputType: StreamType.Arbitrary,
-			});
-			this.audioPlayer.play(resource);
 		}
 		catch (err) {
 			console.error(err);

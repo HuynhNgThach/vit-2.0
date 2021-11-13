@@ -1,0 +1,1 @@
+rsync -a /home/thachhn3/js/bot/vit-2.0/* thachhn3@172.25.148.241:~/bot

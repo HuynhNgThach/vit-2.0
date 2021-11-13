@@ -6,6 +6,7 @@ const createGuildData = require('../../models/GuildData');
 const yts = require('yt-search');
 const url = require('url');
 const { AudioPlayerStatus, joinVoiceChannel, entersState, VoiceConnectionStatus } = require('@discordjs/voice');
+const { setData } = require('../../keyv');
 
 let {
 	PLAY_LIVE_STREAM, PLAY_VIDEO_LONGER_THAN_1_HOUR, MAX_QUEUE_LENGTH, AUTO_SHUFFLE_YOUTUBE_PLAYLIST, LEAVE_TIMEOUT, MAX_RESPONSE_TIME, DELETE_OLD_PLAY_MESSAGE,
@@ -64,10 +65,7 @@ module.exports = {
 				player = new Player();
 				interaction.client.playerManager.set(interaction.guildId, player);
 			}
-			if (false) { // tạm không check lock nữa thử
-				return interaction.followUp(':duck: busy');
 
-			}
 			player.commandLock = true;
 
 
@@ -75,23 +73,6 @@ module.exports = {
 				const q = url.parse(query, true)?.query;
 				song = q.v;
 
-				// const video = await yts(q.v);
-				// if (!video) return interaction.followUp(':x:');
-
-				// player.queue.push(
-				// 	constructSongObj(
-				// 		video,
-				// 		interaction.member.voice.channel,
-				// 		interaction.member.user,
-				// 	),
-				// );
-
-
-				// if (player.audioPlayer.state.status !== AudioPlayerStatus.Playing) {
-				// 	handleSubscription(player.queue, interaction, player);
-
-				// }
-				// return interaction.followUp(`Added **${video.title}** to farm`);
 			}
 			await searchYoutube(song,
 				interaction,
@@ -116,14 +97,7 @@ const searchYoutube = async (
 	voiceChannel,
 	searchFlag,
 ) => {
-	// const limit = searchFlag ? 5 : 1;
-	// const videos = await Youtube.search(song, { limit, safeSearch: true }).catch(
-	// 	async function() {
-	// 		return interaction.followUp(
-	// 			':x: There was a problem searching the video you requested!',
-	// 		);
-	// 	},
-	// );
+
 	const res = await yts(song);
 	const videos = res?.videos;
 	if (!videos) {
@@ -138,7 +112,6 @@ const searchYoutube = async (
 			':x: :duck: :x: 301',
 		);
 	}
-	console.log('video list: ', videos);
 	if (false) {
 		const vidNameArr = [];
 		for (let i = 0; i < videos.length; i++) {
@@ -270,11 +243,11 @@ const searchYoutube = async (
 			);
 		}
 
-
+		const songModel = await constructSongObj(videos[0], voiceChannel, interaction.member.user);
 		interaction.client.playerManager
 			.get(interaction.guildId)
 			.queue.push(
-				constructSongObj(videos[0], voiceChannel, interaction.member.user),
+				songModel,
 			);
 
 		if (
@@ -304,7 +277,7 @@ const handleSubscription = async (queue, interaction, player) => {
 		// happens when loading a saved playlist
 		voiceChannel = interaction.member.voice.channel;
 	}
-
+	console.log(player.queue);
 	const title = player.queue[0].title;
 	let connection = player.connection;
 	if (!connection) {
@@ -329,14 +302,17 @@ const handleSubscription = async (queue, interaction, player) => {
 		return;
 	}
 	player.process(player.queue);
-	await interaction.followUp(`Đã thêm vào farm ${title}`);
+	await interaction.followUp(`Đã thêm vào farm 1 ${title}`);
 };
 
 
-const constructSongObj = (video, voiceChannel, user, timestamp) => {
+const constructSongObj = async (video, voiceChannel, user, timestamp) => {
 	let duration = video.duration.toString();
 	if (duration === '00:00') duration = 'Live Stream';
+
 	// checks if the user searched for a song using a Spotify URL
+	console.log('video', video);
+	await setData({ video, user });
 	return {
 		id: video.videoId,
 		durationSecond: video.seconds,
