@@ -1,12 +1,12 @@
-const yts = require('yt-search');
-const url = require('url');
+const youtubedl = require('youtube-dl-exec');
 
-async function test() {
-	const query = url.parse('https://www.youtube.com/watch?v=pAm1a5mrO8o&ab_channel=%C4%90%C3%ACnhTr%E1%BB%8DngOfficial', true)?.query;
-	console.log(query);
-	const r = await yts('RkWQDDv_qdg');
-
-	console.log(r.videos[0]);
-}
-test();
-
+youtubedl('https://www.youtube.com/watch?v=WhcWfpCWsS0&ab_channel=MixiCityRecords', {
+	dumpSingleJson: true,
+	noWarnings: true,
+	noCallHome: true,
+	noCheckCertificate: true,
+	preferFreeFormats: true,
+	youtubeSkipDashManifest: true,
+	referer: 'https://www.youtube.com/watch?v=WhcWfpCWsS0&ab_channel=MixiCityRecords',
+})
+	.then(output => console.log(output));
