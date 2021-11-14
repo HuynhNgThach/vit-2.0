@@ -106,15 +106,15 @@ client.once('ready', (c) => {
 		}
 	});
 	client.channels.cache.get('909085755845017661').send('Vit đã online :duck:');
-	// try {
-	// 	continuousGetMessage(url, client);
-	// 	// connect database
-	// 	mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-	// 	mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
-	// }
-	// catch (error) {
-	// 	console.log('ERROR', error);
-	// }
+	try {
+		continuousGetMessage(url, client);
+		// connect database
+		mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+		mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+	}
+	catch (error) {
+		console.log('ERROR', error);
+	}
 });
 
 
