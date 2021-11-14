@@ -34,7 +34,7 @@ require('dotenv').config();
 const fs = require('fs');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { CLIENT_ID, MONGO_URL } = require('./config.js');
+const { CLIENT_ID } = require('./config.js');
 const { Client, Intents, Collection } = require('discord.js');
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const rest = new REST({ version: 9 }).setToken(BOT_TOKEN);
@@ -109,7 +109,7 @@ client.once('ready', (c) => {
 	try {
 		continuousGetMessage(url, client);
 		// connect database
-		mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+		mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 		mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 	}
 	catch (error) {
