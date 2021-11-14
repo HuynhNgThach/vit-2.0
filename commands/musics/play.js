@@ -311,18 +311,18 @@ const constructSongObj = async (video, voiceChannel, user, timestamp) => {
 	if (duration === '00:00') duration = 'Live Stream';
 	console.log(video);
 	// checks if the user searched for a song using a Spotify URL
-	const song = new Song({
-		name: video.title,
-		requestBy: user.username,
-		requesterAvatar: user.avatarURL('webp', false, 16),
-		date: Date.now(),
-		type: 'YOUTUBE', // YOUTUBE, SPOTIFY
-		duration: video.duration.toString(),
-		image: video.image,
-		thumbnail: video.thumbnail,
-		id: video.videoId,
-	});
-	await song.save();
+	// const song = new Song({
+	// 	name: video.title,
+	// 	requestBy: user.username,
+	// 	requesterAvatar: user.avatarURL('webp', false, 16),
+	// 	date: Date.now(),
+	// 	type: 'YOUTUBE', // YOUTUBE, SPOTIFY
+	// 	duration: video.duration.toString(),
+	// 	image: video.image,
+	// 	thumbnail: video.thumbnail,
+	// 	id: video.videoId,
+	// });
+	// await song.save();
 	return {
 		id: video.videoId,
 		durationSecond: video.seconds,
