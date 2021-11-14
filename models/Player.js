@@ -160,7 +160,7 @@ class MusicPlayer {
 		this.nowPlaying = song;
 		try {
 			// const resource = await this.createAudioResource(song.url);
-			const stream = ytdl(song.url, { filter: 'audioonly', highWaterMark :1024 * 1024 * 10 });
+			const stream = ytdl(song.url, { filter: 'audioonly', highWaterMark :1 << 25 });
 			const resource = createAudioResource(stream);
 			this.audioPlayer.play(resource);
 			this.audioPlayer.on('error', error => {
