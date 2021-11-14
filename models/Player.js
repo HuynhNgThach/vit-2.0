@@ -162,7 +162,7 @@ class MusicPlayer {
 			// const resource = await this.createAudioResource(song.url);
 			const stream = ytdl(song.url, { filter: 'audioonly' });
 			const resource = createAudioResource(stream);
-			this.audioPlayer.play(resource, { inputType: StreamType.Arbitrary });
+			this.audioPlayer.play(resource);
 			this.audioPlayer.on('error', error => {
 				console.error(`Error: ${error.message} with resource`, error);
 
