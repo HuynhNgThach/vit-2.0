@@ -27,6 +27,8 @@
     "@discordjs/rest": "0.1.0-canary.0",
     "@discordjs/voice": "^0.7.0",
     "axios": "^0.22.0",
+    "chart.js": "^3.6.0",
+    "chartjs-node-canvas": "^4.1.4",
     "cheerio": "^1.0.0-rc.10",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.3.1",
