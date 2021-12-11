@@ -126,9 +126,9 @@ client.once("ready", (c) => {
       console.error.bind(console, "MongoDB connection error:")
     );
 
-    //start api server
-    server.listen(3030, () => {
-      console.log(`Server started at port 3030`);
+    // start api server
+    server.listen(process.env.PORT || 3020, () => {
+      console.log(`Server started successfully`);
     });
   } catch (error) {
     console.log("ERROR", error);
