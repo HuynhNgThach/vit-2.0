@@ -49,8 +49,6 @@ const commands = [];
 let textChannelId = "";
 const mongoose = require("mongoose");
 
-const server = require("./server");
-
 const { continuousGetMessage } = require("./msteam.js");
 const url = `https://southeastasia-prod-2.notifications.teams.microsoft.com/users/8:orgid:e91527c9-2481-45ec-972c-9ceb2226357d/endpoints/88001bde-ee83-4214-aaab-6cbf312993ee/events/poll?cursor=${Math.round(
   Date.now() / 1000
@@ -125,11 +123,6 @@ client.once("ready", (c) => {
       "error",
       console.error.bind(console, "MongoDB connection error:")
     );
-
-    // start api server
-    server.listen(process.env.PORT || 3020, () => {
-      console.log(`Server started successfully`);
-    });
   } catch (error) {
     console.log("ERROR", error);
   }
